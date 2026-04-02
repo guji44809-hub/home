@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Noto Sans TC", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Noto Sans TC", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-primary: #d97706; /* amber-600, matches logo orange */
+  --color-brand-dark: #78350f; /* amber-900, matches logo brown */
+  --color-brand-leaf: #65a30d; /* lime-600, matches logo green */
+  --color-brand-sun: #facc15; /* yellow-400, matches logo sun */
+  
+  --color-primary: var(--color-brand-primary);
+  --color-secondary: var(--color-brand-leaf);
+  --color-accent: var(--color-brand-sun);
+  --color-background: #FDF6E3;
+}
+
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased font-sans;
+  }
+}
+
+.markdown-body {
+  @apply prose prose-stone max-w-none;
+}
+
+.beach-gradient {
+  background: linear-gradient(to bottom, #00A8E8 0%, #FDF6E3 100%);
+}
+
+.card-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
