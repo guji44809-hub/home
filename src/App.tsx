@@ -244,12 +244,13 @@ export default function App() {
     scrollToBottom();
   }, [chatMessages]);
 
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || isChatLoading) return;
+  const handleSendMessage = async (text?: string) => {
+    const messageToSend = text || chatInput;
+    if (!messageToSend.trim() || isChatLoading) return;
 
-    const userMessage = chatInput.trim();
+    const userMessage = messageToSend.trim();
     setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setChatInput('');
+    if (!text) setChatInput('');
     setIsChatLoading(true);
 
     try {
@@ -264,13 +265,31 @@ export default function App() {
         - 電話：0906-000-923 / 02-25236643
         - 營業時間：週一至週五 07:30 - 11:30 (11:30 後僅開放預約隔日訂單)
         
-        菜單分類：
-        - 增肌減脂：如 義式香草舒肥雞地瓜能量碗 ($160)
-        - 調整腸胃：如 暖心味噌豆腐鮮菇盅 ($140)
-        - 運動營養：如 慢火烤豬里肌糙米增能餐 ($180)
-        - 孕期營養：如 挪威炙烤鮭魚藜麥養胎飯 ($280)
-        - 銀髮族：如 絲瓜蛤蜊滑豆腐軟食餐 ($180)
-        - 兒童長高：如 紅燒番茄嫩牛長高定食 ($190)
+        菜單分類與精選餐點：
+        1. 增肌減脂：
+           - 義式香草舒肥雞地瓜碗 ($160)
+           - 青檸紙包鮮鱸五穀定食 ($210)
+           - 黑胡椒嫩煎牛排溫沙拉 ($250)
+        2. 調整腸胃：
+           - 暖心味噌豆腐鮮菇盅 ($140)
+           - 藍莓奇亞籽希臘優格杯 ($130)
+           - 秋葵山藥雞肉蕎麥冷麵 ($170)
+        3. 運動補充：
+           - 慢火烤豬里肌糙米增能餐 ($180)
+           - 全麥牛肉時蔬能量捲餅 ($150)
+           - 照燒雞腿紫米機能餐 ($185)
+        4. 孕期營養：
+           - 挪威炙烤鮭魚藜麥養胎飯 ($280)
+           - 鮮味蛤蜊燉雞紅莧菜餐 ($250)
+           - 麻油龍膽石斑魚湯定食 ($320)
+        5. 銀髮族：
+           - 絲瓜蛤蜊滑豆腐軟食餐 ($180)
+           - 深海魚片翡翠燕麥粥 ($170)
+           - 清蒸冬瓜獅子頭碎肉餐 ($160)
+        6. 兒童長高：
+           - 紅燒番茄嫩牛長高定食 ($190)
+           - 起司彩椒雞丁烘蛋套餐 ($160)
+           - 芝麻淋醬鮮魚柳飯糰 ($145)
         
         三天窈窕體驗：
         這是我們的招牌計畫，由營養師調配。現在完成網站上的「營養健康測驗」即可領取 $49 體驗券，用於首購體驗。
@@ -512,7 +531,7 @@ export default function App() {
 
         {view === 'menu' && (
           <motion.div key="menu" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex-grow container mx-auto px-4 py-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <h3 className="text-4xl font-display text-brand-dark">營養菜單</h3>
               {!isInstantOrder() && (
                 <div className="bg-brand-sun/10 border border-brand-sun/30 px-6 py-3 rounded-2xl flex items-center gap-3 text-brand-dark">
@@ -524,8 +543,36 @@ export default function App() {
                 </div>
               )}
             </div>
+
+            {/* Category Quick Jump */}
+            <div className="sticky top-[73px] z-30 bg-stone-50/80 backdrop-blur-md py-4 mb-12 -mx-4 px-4 overflow-x-auto no-scrollbar flex gap-3 border-b border-stone-200">
+              {Array.from(new Set(MENU_DATA.map(i => i.category))).map(category => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    const element = document.getElementById(`category-${category}`);
+                    if (element) {
+                      const offset = 160; // Offset for sticky headers
+                      const bodyRect = document.body.getBoundingClientRect().top;
+                      const elementRect = element.getBoundingClientRect().top;
+                      const elementPosition = elementRect - bodyRect;
+                      const offsetPosition = elementPosition - offset;
+
+                      window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                      });
+                    }
+                  }}
+                  className="whitespace-nowrap px-6 py-3 rounded-full bg-white border border-stone-200 text-stone-600 font-bold hover:border-brand-primary hover:text-brand-primary transition-all shadow-sm active:scale-95"
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
             {Array.from(new Set(MENU_DATA.map(i => i.category))).map(category => (
-              <div key={category} className="mb-16">
+              <div key={category} id={`category-${category}`} className="mb-16 scroll-mt-40">
                 <h4 className="text-2xl font-display mb-8 flex items-center gap-3"><span className="w-2 h-8 bg-brand-primary rounded-full" />{category}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {MENU_DATA.filter(i => i.category === category).map(item => (
@@ -972,6 +1019,23 @@ export default function App() {
               </div>
               
               <div className="p-4 bg-white border-t border-stone-100">
+                {/* Quick Actions */}
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-3 no-scrollbar">
+                  {[
+                    "📍 門市地址", "📞 聯絡電話", "🕒 營業時間", 
+                    "🍱 推薦菜單", "✨ 三天窈窕體驗", "🛒 如何訂購"
+                  ].map((action) => (
+                    <button
+                      key={action}
+                      onClick={() => handleSendMessage(action)}
+                      disabled={isChatLoading}
+                      className="whitespace-nowrap px-3 py-1.5 bg-stone-100 hover:bg-brand-sun/20 text-stone-600 hover:text-brand-dark rounded-full text-xs font-bold transition-colors border border-stone-200"
+                    >
+                      {action}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="flex gap-2">
                   <input 
                     type="text" 
@@ -982,7 +1046,7 @@ export default function App() {
                     className="flex-grow bg-stone-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-primary transition-all"
                   />
                   <button 
-                    onClick={handleSendMessage}
+                    onClick={() => handleSendMessage()}
                     disabled={isChatLoading}
                     className="bg-brand-dark text-white p-3 rounded-xl hover:bg-brand-primary transition-colors disabled:opacity-50"
                   >

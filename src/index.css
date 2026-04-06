@@ -34,3 +34,12 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
